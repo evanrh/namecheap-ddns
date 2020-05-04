@@ -3,7 +3,8 @@ import requests as r
 from getpass import getpass
 import xml.etree.ElementTree as ET
 '''
-    
+    Object to create a client session that updates 
+    the DDNS record
 '''
 class Client():
     def __init__(self, host=None, domain=None, passwd=None):
