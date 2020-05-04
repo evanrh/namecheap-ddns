@@ -1,6 +1,6 @@
 <b>Dependencies</b>
 <br>
-requests
+* [requests](https://3.python-requests.org/)
 
 This is a small package to update a Namecheap DDNS record using their browser based update system
 
