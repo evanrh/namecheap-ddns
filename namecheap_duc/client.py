@@ -1,5 +1,6 @@
 
 import requests as r
+from getpass import getpass
 import xml.etree.ElementTree as ET
 '''
     
@@ -18,7 +19,7 @@ class Client():
             self.domain = input('Enter domain to be updated: ')
 
         while self.passwd == None:
-            self.passwd = input('Enter your DDNS password (this is not your account password): ')
+            self.passwd = getpass('Enter your DDNS password (this is not your account password): ')
 
         # Host is optional
         if self.host == None:
