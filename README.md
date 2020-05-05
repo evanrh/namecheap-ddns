@@ -1,8 +1,10 @@
 ## namecheap-ddns
+Updates the IP address of a namecheap DDNS A record
 
+# Overview
 This is a small package to update a Namecheap DDNS record using their browser based update system
 
-# Dependencies
+<b>Dependencies</b>
 <br>
 * [requests](https://3.python-requests.org/)
 
