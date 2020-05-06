@@ -6,7 +6,7 @@ This is a small package to update a Namecheap DDNS record using their browser ba
 
 <b>Dependencies</b>
 <br>
-* [requests](https://3.python-requests.org/)
+* [requests](https://3.python-requests.org/) This is only required for the requests_client, the main client is vanilla Python
 
 # Features
 <br>
