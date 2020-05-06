@@ -1,4 +1,5 @@
 import requests_client, argparse
+import no_reqs_client
 
 class Driver():
     '''
@@ -6,7 +7,7 @@ class Driver():
     '''
 
     def __init__(self):
-        self.client = requests_client.Requests_Client()
+        self.client = no_reqs_client.No_Reqs_Client()
 
     def start(self):
         self.client.run()

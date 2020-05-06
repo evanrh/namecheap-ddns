@@ -1,17 +1,24 @@
 
-import requests as r
+import urllib.parse as parser
+import http.client
 from getpass import getpass
 import xml.etree.ElementTree as ET
-'''
-    Object to create a client session that updates 
-    the DDNS record
-'''
-class Client():
-    def __init__(self, host=None, domain=None, passwd=None):
+import socket
+
+class No_Reqs_Client():
+    '''
+        Object to create a client session that updates 
+        the DDNS record
+    '''
+
+    SITE_URL = 'dynamicdns.park-your-domain.com'
+    PATH = '/update'
+
+    def __init__(self, host=None, domain=None, passwd=None, ip_addr=None):
         self.host = host
         self.domain = domain
         self.passwd =  passwd
-        self.site_url = 'https://dynamicdns.park-your-domain.com/update'
+        self.ip_addr = ip_addr
 
     # Get inputs for values from the user
     def __get_inputs(self):
@@ -24,7 +31,11 @@ class Client():
 
         # Host is optional
         if self.host == None:
-            self.host = input('Enter host to be updated (enter for none):')
+            self.host = input('Enter host to be updated (enter for @):')
+            self.host = '@' if self.host == '' else ''
+
+        if self.ip_addr == None:
+            self.ip_addr = input('Enter the IP address for the record (enter for public IP): ')
 
     def run(self):
         
@@ -38,26 +49,23 @@ class Client():
     def __update_record(self):
 
         # Define site update params
-        params = {'host': self.host, 'domain': self.domain, 'password': self.passwd}
+        params = {'host': self.host, 'domain': self.domain, 'password': self.passwd,
+                    'ip': self.ip_addr}
 
+        queries = parser.urlencode(params)
         # Try to post update to record
         try:
-            session = r.post(self.site_url, params=params)
+            session = http.client.HTTPSConnection(self.SITE_URL)
+            session.request('POST', self.PATH + '?' + queries)
 
-        # Connection timeout
-        except r.exceptions.Timeout:
-            self.__update_record()
-
-        # URL was incorrect
-        except r.exceptions.TooManyRedirects:
-            raise SystemExit('Error: bad url')
-
-        # Some fatal error
-        except r.exceptions.RequestException as e:
+        except http.client.HTTPException as e:
             raise SystemExit(e)
 
+        response = session.getresponse()
+        data = response.read()
+
         # XML response parsing
-        doc_root = ET.fromstring(session.text)
+        doc_root = ET.fromstring(data)
         session.close()
 
         errs = int(doc_root.find('ErrCount').text)
@@ -70,5 +78,5 @@ class Client():
             raise SystemExit()
 
         print('DDNS Record updated successfully!')
-
-
+        print('%s -> %s' % (self.domain, socket.gethostbyname(self.domain)))
+        

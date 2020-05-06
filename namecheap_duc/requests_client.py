@@ -8,11 +8,14 @@ class Requests_Client():
         Object to create a client session that updates 
         the DDNS record
     '''
-    def __init__(self, host=None, domain=None, passwd=None):
+
+    SITE_URL = 'https://dynamicdns.park-your-domain.com/update'
+
+    def __init__(self, host=None, domain=None, passwd=None, ip_addr=None):
         self.host = host
         self.domain = domain
         self.passwd =  passwd
-        self.site_url = 'https://dynamicdns.park-your-domain.com/update'
+        self.ip_addr = ip_addr
 
     # Get inputs for values from the user
     def __get_inputs(self):
@@ -25,7 +28,12 @@ class Requests_Client():
 
         # Host is optional
         if self.host == None:
-            self.host = input('Enter host to be updated (enter for none):')
+            self.host = input('Enter host to be updated (enter for @):')
+            self.host = '@' if self.host == '' else ''
+
+        # Defaults to public IP if none specified
+        if self.ip_addr == None:
+            self.ip_addr = input('Enter the IP address for the record (enter for public IP): ')
 
     def run(self):
         
@@ -39,11 +47,12 @@ class Requests_Client():
     def __update_record(self):
 
         # Define site update params
-        params = {'host': self.host, 'domain': self.domain, 'password': self.passwd}
+        params = {'host': self.host, 'domain': self.domain, 'password': self.passwd,
+                    'ip': self.ip_addr}
 
         # Try to post update to record
         try:
-            session = r.post(self.site_url, params=params)
+            session = r.post(SITE_URL, params=params)
 
         # Connection timeout
         except r.exceptions.Timeout:
