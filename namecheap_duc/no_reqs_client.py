@@ -19,38 +19,20 @@ class No_Reqs_Client():
         self.domain = domain
         self.passwd =  passwd
         self.ip_addr = ip_addr
-
-    # Get inputs for values from the user
-    def __get_inputs(self):
-        
-        while self.domain == None:
-            self.domain = input('Enter domain to be updated: ')
-
-        while self.passwd == None:
-            self.passwd = getpass('Enter your DDNS password (this is not your account password): ')
-
-        # Host is optional
-        if self.host == None:
-            self.host = input('Enter host to be updated (enter for @):')
-            self.host = '@' if self.host == '' else ''
-
-        if self.ip_addr == None:
-            self.ip_addr = input('Enter the IP address for the record (enter for public IP): ')
+        self.err_list = []
 
     def run(self):
-        
-        # Catch unentered values
-        # Host is optional and only will be asked if these are not specified
-        if self.domain == None or self.passwd == None:
-            self.__get_inputs()
-
-        self.__update_record()
+        return self.__update_record()
 
     def __update_record(self):
 
         # Define site update params
-        params = {'host': self.host, 'domain': self.domain, 'password': self.passwd,
-                    'ip': self.ip_addr}
+        params = {'domain': self.domain, 'password': self.passwd}
+
+        if self.host != None:
+            params['host'] = self.host
+        if self.ip_addr != None:
+            params['ip'] = self.ip_addr
 
         queries = parser.urlencode(params)
         # Try to post update to record
@@ -74,9 +56,14 @@ class No_Reqs_Client():
         # Password is wrong or domain is wrong
         if errs > 0:
             for item in doc_root.find('errors'):
-                print(item.text)
-            raise SystemExit()
+                self.err_list.append(item)
+            return False
 
-        print('DDNS Record updated successfully!')
-        print('%s -> %s' % (self.domain, socket.gethostbyname(self.domain)))
-        
+        return True
+
+    def get_ip(self):
+        return socket.gethostbyname(self.domain)
+
+    def get_errs(self):
+        return self.err_list
+                

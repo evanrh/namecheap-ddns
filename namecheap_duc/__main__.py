@@ -1,17 +1,5 @@
-import requests_client, argparse
-import no_reqs_client
+from cli import cli_view, cli_controller
 
-class Driver():
-    '''
-        Basic object to handle creation of the client session
-    '''
-
-    def __init__(self):
-        self.client = no_reqs_client.No_Reqs_Client()
-
-    def start(self):
-        self.client.run()
-
-
-d = Driver()
-d.start()
+view = cli_view.CLI_View()
+c = cli_controller.CLI_Controller(view)
+c.main()
